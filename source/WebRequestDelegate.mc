@@ -48,16 +48,30 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     
     function onMenu() {
     	if(!loaded) {
-    		return true;
-    	}
-    	var myMenu = new WatchUi.Menu();
-    	if(isRunning) {
-    		myMenu.addItem("Stop", :stop);
+    		// special menu while loading!
+    		var myMenu = new WatchUi.Menu();
+    		myMenu.addItem("Queue start", :start);
+    		myMenu.addItem("Queue stop", :stop);
+	    	WatchUi.pushView(myMenu, new LoadingMenuDelegate(method(:loadingMenuUpdateCallback)), WatchUi.SLIDE_IMMEDIATE);
     	}
     	else {
-    		myMenu.addItem("Start", :start);
+	    	var myMenu = new WatchUi.Menu();
+	    	if(isRunning) {
+	    		myMenu.addItem("Stop", :stop);
+	    	}
+	    	else {
+	    		myMenu.addItem("Start", :start);
+	    	}
+	    	WatchUi.pushView(myMenu, new MyMenuDelegate(timeEntryId, method(:updateCallback)), WatchUi.SLIDE_IMMEDIATE);
     	}
-    	WatchUi.pushView(myMenu, new MyMenuDelegate(timeEntryId, method(:updateCallback)), WatchUi.SLIDE_IMMEDIATE);
+    }
+    
+    var actionOnLoaded = null;
+    function loadingMenuUpdateCallback(startOrStopToken) {
+    	System.println("loading menu callback" + startOrStopToken);
+    	actionOnLoaded = startOrStopToken;
+    	// todo: cancel old request!?
+    	makeRequest();
     }
     
     function updateCallback(responseCode, data) {
@@ -115,11 +129,46 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 			var timeStr = Lang.format("$1$:$2$", [h.format("%d"), m.format("%02d")]);
 			System.println("p:" + projectName + ", t: " + taskName + ", hours: " + hours + ", bitHour: " + bitHour + ", h: " + timeStr + " minsMaybe: " + minsMaybe + " m: " + m);
 			
-        	var message = projectName + "\n" + taskName + "\n" + timeStr + " - " + running;
-        	notify.invoke(message);
-            //notify.invoke(data);
+			if(actionOnLoaded != null) {
+				System.println("actionOnLoaded " + actionOnLoaded);
+				if(actionOnLoaded == :start) {
+					doHarvestTimeEntryPatch(timeEntryId, "restart");
+				}
+				else if(actionOnLoaded == :stop) {
+					doHarvestTimeEntryPatch(timeEntryId, "stop");
+				}
+				actionOnLoaded = null;
+			}
+			else {
+	        	var message = projectName + "\n" + taskName + "\n" + timeStr + " - " + running;
+	        	notify.invoke(message);
+	            //notify.invoke(data);
+            }
         } else {
             notify.invoke("Failed to load\nError: " + responseCode.toString());
         }
+    }
+    
+    // todo: create parent type which has this available!
+    function doHarvestTimeEntryPatch(timeEntryId, typeStr) {
+    	System.println("patching after load " + typeStr + " time entry: " + timeEntryId);
+    	Communications.makeWebRequest(
+            "https://httpproxy.now.sh/api",
+            {
+            	"url" =>"https://api.harvestapp.com/v2/time_entries/"+timeEntryId+"/"+typeStr+"?"+"access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
+            	"method"=>"PATCH"
+            },
+            {
+            	:method => Communications.HTTP_REQUEST_METHOD_POST,
+                "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED
+            },
+            method(:patchCallback)
+        );
+    }
+    
+    function patchCallback(responseCode, data) {
+    	// this seems to give me an error message!?
+    	System.println("patch response code: " + responseCode + " data: " + data);
+		makeRequest();
     }
 }
