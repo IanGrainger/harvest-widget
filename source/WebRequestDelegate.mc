@@ -81,7 +81,7 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 
     function makeRequest() {
         notify.invoke("Getting data...");
-
+		Communications.cancelAllRequests();
         Communications.makeWebRequest(
             "https://api.harvestapp.com/v2/time_entries?per_page=5"+"&access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
             {

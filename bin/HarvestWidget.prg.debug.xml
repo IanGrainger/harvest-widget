@@ -78,45 +78,46 @@
         <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="29" lineNum="79" pc="268436944" symbol="updateCallback"/>
         <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="30" lineNum="82" pc="268436957" symbol="makeRequest"/>
         <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="30" lineNum="83" pc="268436961" symbol="makeRequest"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="30" lineNum="85" pc="268436984" symbol="makeRequest"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="31" lineNum="97" pc="268437060" symbol="initialize"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="31" lineNum="98" pc="268437064" symbol="initialize"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="31" lineNum="99" pc="268437086" symbol="initialize"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="31" lineNum="101" pc="268437096" symbol="initialize"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="109" pc="268437109" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="110" pc="268437113" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="111" pc="268437169" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="113" pc="268437179" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="114" pc="268437195" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="115" pc="268437211" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="116" pc="268437227" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="117" pc="268437237" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="118" pc="268437253" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="119" pc="268437269" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="120" pc="268437276" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="121" pc="268437287" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="124" pc="268437297" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="125" pc="268437310" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="126" pc="268437317" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="127" pc="268437339" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="129" pc="268437349" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="130" pc="268437427" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="132" pc="268437507" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="133" pc="268437520" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="134" pc="268437552" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="135" pc="268437569" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="137" pc="268437597" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="138" pc="268437614" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="140" pc="268437642" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="143" pc="268437654" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="144" pc="268437685" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="148" pc="268437708" symbol="onReceive"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="33" lineNum="153" pc="268437744" symbol="doHarvestTimeEntryPatch"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="33" lineNum="154" pc="268437748" symbol="doHarvestTimeEntryPatch"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="33" lineNum="155" pc="268437783" symbol="doHarvestTimeEntryPatch"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="34" lineNum="169" pc="268437923" symbol="patchCallback"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="34" lineNum="171" pc="268437927" symbol="patchCallback"/>
-        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="34" lineNum="172" pc="268437962" symbol="patchCallback"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="30" lineNum="84" pc="268436984" symbol="makeRequest"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="30" lineNum="85" pc="268437000" symbol="makeRequest"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="31" lineNum="97" pc="268437076" symbol="initialize"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="31" lineNum="98" pc="268437080" symbol="initialize"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="31" lineNum="99" pc="268437102" symbol="initialize"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="31" lineNum="101" pc="268437112" symbol="initialize"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="109" pc="268437125" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="110" pc="268437129" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="111" pc="268437185" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="113" pc="268437195" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="114" pc="268437211" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="115" pc="268437227" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="116" pc="268437243" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="117" pc="268437253" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="118" pc="268437269" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="119" pc="268437285" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="120" pc="268437292" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="121" pc="268437303" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="124" pc="268437313" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="125" pc="268437326" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="126" pc="268437333" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="127" pc="268437355" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="129" pc="268437365" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="130" pc="268437443" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="132" pc="268437523" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="133" pc="268437536" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="134" pc="268437568" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="135" pc="268437585" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="137" pc="268437613" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="138" pc="268437630" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="140" pc="268437658" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="143" pc="268437670" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="144" pc="268437701" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="32" lineNum="148" pc="268437724" symbol="onReceive"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="33" lineNum="153" pc="268437760" symbol="doHarvestTimeEntryPatch"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="33" lineNum="154" pc="268437764" symbol="doHarvestTimeEntryPatch"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="33" lineNum="155" pc="268437799" symbol="doHarvestTimeEntryPatch"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="34" lineNum="169" pc="268437939" symbol="patchCallback"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="34" lineNum="171" pc="268437943" symbol="patchCallback"/>
+        <entry filename="C:\\Users\\IanGrainger\\eclipse-workspace\\HarvestWidget\\source\\WebRequestDelegate.mc" id="34" lineNum="172" pc="268437978" symbol="patchCallback"/>
     </pcToLineNum>
     <symbolTable>
         <entry id="8388698" method="true" symbol="start"/>
@@ -201,24 +202,24 @@
         <entry endPc="268436905" name="startOrStopToken" stackId="1" startPc="268436852"/>
         <entry endPc="268436957" name="responseCode" stackId="1" startPc="268436905"/>
         <entry endPc="268436957" name="data" stackId="2" startPc="268436905"/>
-        <entry endPc="268437109" name="handler" stackId="1" startPc="268437060"/>
-        <entry endPc="268437705" name="message" stackId="13" startPc="268437654"/>
-        <entry endPc="268437705" name="timeStr" stackId="12" startPc="268437169"/>
-        <entry endPc="268437705" name="minsMaybe" stackId="11" startPc="268437169"/>
-        <entry endPc="268437705" name="taskName" stackId="5" startPc="268437169"/>
-        <entry endPc="268437705" name="timeEntry1" stackId="3" startPc="268437169"/>
-        <entry endPc="268437705" name="m" stackId="10" startPc="268437169"/>
-        <entry endPc="268437705" name="h" stackId="8" startPc="268437169"/>
-        <entry endPc="268437705" name="running" stackId="7" startPc="268437169"/>
-        <entry endPc="268437705" name="hours" stackId="6" startPc="268437169"/>
-        <entry endPc="268437705" name="bitHour" stackId="9" startPc="268437169"/>
-        <entry endPc="268437705" name="projectName" stackId="4" startPc="268437169"/>
-        <entry endPc="268437744" name="responseCode" stackId="1" startPc="268437109"/>
-        <entry endPc="268437744" name="data" stackId="2" startPc="268437109"/>
-        <entry endPc="268437923" name="typeStr" stackId="2" startPc="268437744"/>
-        <entry endPc="268437923" name="timeEntryId" stackId="1" startPc="268437744"/>
-        <entry endPc="268437975" name="responseCode" stackId="1" startPc="268437923"/>
-        <entry endPc="268437975" name="data" stackId="2" startPc="268437923"/>
+        <entry endPc="268437125" name="handler" stackId="1" startPc="268437076"/>
+        <entry endPc="268437721" name="message" stackId="13" startPc="268437670"/>
+        <entry endPc="268437721" name="timeStr" stackId="12" startPc="268437185"/>
+        <entry endPc="268437721" name="minsMaybe" stackId="11" startPc="268437185"/>
+        <entry endPc="268437721" name="taskName" stackId="5" startPc="268437185"/>
+        <entry endPc="268437721" name="timeEntry1" stackId="3" startPc="268437185"/>
+        <entry endPc="268437721" name="m" stackId="10" startPc="268437185"/>
+        <entry endPc="268437721" name="h" stackId="8" startPc="268437185"/>
+        <entry endPc="268437721" name="running" stackId="7" startPc="268437185"/>
+        <entry endPc="268437721" name="hours" stackId="6" startPc="268437185"/>
+        <entry endPc="268437721" name="bitHour" stackId="9" startPc="268437185"/>
+        <entry endPc="268437721" name="projectName" stackId="4" startPc="268437185"/>
+        <entry endPc="268437760" name="responseCode" stackId="1" startPc="268437125"/>
+        <entry endPc="268437760" name="data" stackId="2" startPc="268437125"/>
+        <entry endPc="268437939" name="typeStr" stackId="2" startPc="268437760"/>
+        <entry endPc="268437939" name="timeEntryId" stackId="1" startPc="268437760"/>
+        <entry endPc="268437991" name="responseCode" stackId="1" startPc="268437939"/>
+        <entry endPc="268437991" name="data" stackId="2" startPc="268437939"/>
     </localVars>
     <annotations/>
     <dataEntryOffsetMappings>
