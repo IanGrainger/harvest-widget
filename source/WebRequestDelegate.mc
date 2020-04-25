@@ -6,6 +6,7 @@
 
 using Toybox.Communications;
 using Toybox.WatchUi;
+using Toybox.Time.Gregorian;
 
 class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     var notify;
@@ -70,7 +71,7 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     function loadingMenuUpdateCallback(startOrStopToken) {
     	System.println("loading menu callback" + startOrStopToken);
     	actionOnLoaded = startOrStopToken;
-    	// todo: cancel old request!?
+    	
     	makeRequest();
     }
     
@@ -81,7 +82,8 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 
     function makeRequest() {
         notify.invoke("Getting data...");
-		Communications.cancelAllRequests();
+        // this seems to break the app!?
+		// Communications.cancelAllRequests();
         Communications.makeWebRequest(
             "https://api.harvestapp.com/v2/time_entries?per_page=5"+"&access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
             {
@@ -107,15 +109,18 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 
     // Receive the data from the web request
     function onReceive(responseCode, data) {
+    	//latest response
+    	var lastUpdatedEntry = getLastUpdatedEntry(data["time_entries"]);
+    
         if (responseCode == 200 && data["time_entries"] != null && data["time_entries"].size() > 0) {
         	loaded = true;
         	// get first result's project and task
-        	var timeEntry1 = data["time_entries"][0];
-        	var projectName = timeEntry1["project"]["name"];
-        	var taskName = timeEntry1["task"]["name"];
-        	var hours = timeEntry1["hours"];
-        	isRunning = timeEntry1["is_running"];
-        	timeEntryId = timeEntry1["id"];
+        	//var timeEntry1 = data["time_entries"][0];
+        	var projectName = lastUpdatedEntry["project"]["name"];
+        	var taskName = lastUpdatedEntry["task"]["name"];
+        	var hours = lastUpdatedEntry["hours"];
+        	isRunning = lastUpdatedEntry["is_running"];
+        	timeEntryId = lastUpdatedEntry["id"];
         	var running = "Stopped";
         	if(isRunning) {
         		running = "Running";
@@ -140,13 +145,26 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 				actionOnLoaded = null;
 			}
 			else {
-	        	var message = projectName + "\n" + taskName + "\n" + timeStr + " - " + running;
+	        	var message = projectName + "\n" + taskName + "\n" + timeStr + " - " + running + "\n" + "Create: " + lastUpdatedEntry["created_at"] + "\nUpdate: " + lastUpdatedEntry["updated_at"];
 	        	notify.invoke(message);
 	            //notify.invoke(data);
             }
         } else {
             notify.invoke("Failed to load\nError: " + responseCode.toString());
         }
+    }
+    
+    function getLastUpdatedEntry(timeEntries) {
+    	var lastUpdatedEntry = timeEntries[0];
+    	var lastUpdateDate = parseISODate(lastUpdatedEntry["updated_at"]); 
+    	for(var i=1; i<timeEntries.size(); i++) {
+    		var checkingEntry = timeEntries[i];
+    		if(parseISODate(checkingEntry["updated_at"]).greaterThan(lastUpdateDate)) {
+    			lastUpdatedEntry = checkingEntry;
+    		}
+    	}
+    	
+    	return lastUpdatedEntry;
     }
     
     // todo: create parent type which has this available!
@@ -171,4 +189,63 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     	System.println("patch response code: " + responseCode + " data: " + data);
 		makeRequest();
     }
+    
+    // converts rfc3339 formatted timestamp to Time::Moment (null on error)
+function parseISODate(date) {
+// assert(date instanceOf String)
+
+// 0123456789012345678901234
+// 2011-10-17T13:00:00-07:00
+// 2011-10-17T16:30:55.000Z
+// 2011-10-17T16:30:55Z
+if (date.length() < 20) {
+return null;
+}
+
+var moment = Gregorian.moment({
+:year => date.substring( 0, 4).toNumber(),
+:month => date.substring( 5, 7).toNumber(),
+:day => date.substring( 8, 10).toNumber(),
+:hour => date.substring(11, 13).toNumber(),
+:minute => date.substring(14, 16).toNumber(),
+:second => date.substring(17, 19).toNumber()
+});
+
+var suffix = date.substring(19, date.length());
+// skip over to time zone
+var tz = 0;
+if (suffix.substring(tz, tz + 1).equals(".")) {
+while (tz < suffix.length()) {
+var first = suffix.substring(tz, tz + 1);
+if ("-+Z".find(first) != null) {
+break;
+}
+tz++;
+}
+}
+
+if (tz >= suffix.length()) {
+// no timezone given
+return null;
+}
+var tzOffset = 0;
+if (!suffix.substring(tz, tz + 1).equals("Z")) {
+// +HH:MM
+if (suffix.length() - tz < 6) {
+return null;
+}
+tzOffset = suffix.substring(tz + 1, tz + 3).toNumber() * Gregorian.SECONDS_PER_HOUR;
+tzOffset += suffix.substring(tz + 4, tz + 6).toNumber() * Gregorian.SECONDS_PER_MINUTE;
+
+var sign = suffix.substring(tz, tz + 1);
+if (sign.equals("+")) {
+tzOffset = -tzOffset;
+} else if (sign.equals("-") && tzOffset == 0) {
+// -00:00 denotes unknown timezone
+return null;
+}
+}
+var info = Gregorian.utcInfo(moment, Time.FORMAT_SHORT);
+return moment.add(new Time.Duration(tzOffset));
+}
 }
