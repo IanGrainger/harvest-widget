@@ -9,6 +9,7 @@ using Toybox.WatchUi;
 using Toybox.Time.Gregorian;
 
 class WebRequestDelegate extends WatchUi.BehaviorDelegate {
+	var numToRequest = 15; 
     var notify;
     
     function onSelect() {
@@ -66,7 +67,7 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
         // this seems to break the app!?
 		// Communications.cancelAllRequests();
         Communications.makeWebRequest(
-            "https://api.harvestapp.com/v2/time_entries?per_page=5"+"&access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
+            "https://api.harvestapp.com/v2/time_entries?per_page="+numToRequest+"&access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
             {
             },
             {
