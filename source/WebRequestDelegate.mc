@@ -11,39 +11,7 @@ using Toybox.Time.Gregorian;
 class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     var notify;
     
-    // Handle menu button press
-//    function onMenu() {
-//        makeRequest();
-//        return true;
-//    }
-// NOT WORKING
-//	function onMenu() {
-//        var menu = new WatchUi.Menu2({:title=>"My Menu2"});
-//        var delegate;
-//        menu.addItem(
-//            new MenuItem(
-//                "Item 1 Label",
-//                "Item 1 subLabel",
-//                "itemOneId",
-//                {}
-//            )
-//        );
-//        menu.addItem(
-//            new MenuItem(
-//                "Item 2 Label",
-//                "Item 2 subLabel",
-//                "itemTwoId",
-//                {}
-//            )
-//        );
-//        delegate = new MyMenu2Delegate(); // a WatchUi.Menu2InputDelegate
-//        WatchUi.pushView(menu, delegate, WatchUi.SLIDE_IMMEDIATE);
-//        return true;
-//    }
-
     function onSelect() {
-//        makeRequest();
-//        return true;
 		return onMenu();
     }
     
@@ -67,8 +35,11 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 	    	var keys = titleToTimeEntriesDict.keys();
 	    	for(var i=0; i<keys.size(); i++) {
 	    		// don't include if currently running!?
-	    		var timeEntry = titleToTimeEntriesDict.get(keys[i]); 
-	    		if(!timeEntry["is_running"]) {
+	    		var timeEntry = titleToTimeEntriesDict.get(keys[i]);
+	    		
+	    		// exclude one which matches the timer on the main display
+	    		// todo: check running timers get an updated update_date
+	    		if(timeEntry["id"] != timeEntryId) {
 	    			myMenu.addItem(keys[i], timeEntry["id"]);
 	    		}
 	    	}
@@ -124,8 +95,7 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     function onReceive(responseCode, data) {
     	//latest response
     	
-    	// todo: dedupe and check today?
-    	
+    	// todo: check today?
         if (responseCode == 200 && data["time_entries"] != null && data["time_entries"].size() > 0) {
         	loaded = true;
         	recentTimeEntries = data["time_entries"];
@@ -164,7 +134,7 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 				actionOnLoaded = null;
 			}
 			else {
-	        	var message = projectName + "\n" + taskName + "\n" + timeStr + " - " + running + "\n" + "Create: " + lastUpdatedEntry["created_at"] + "\nUpdate: " + lastUpdatedEntry["updated_at"];
+	        	var message = projectName + "\n" + taskName + "\n" + timeStr + " - " + running; //+ "\n" + "Create: " + lastUpdatedEntry["created_at"] + "\nUpdate: " + lastUpdatedEntry["updated_at"];
 	        	notify.invoke(message);
 	            //notify.invoke(data);
             }
@@ -177,9 +147,15 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     function getLastUpdatedEntry(timeEntries) {
     	var lastUpdatedEntry = timeEntries[0];
     	
+    	if(lastUpdatedEntry["is_running"]) {
+    		return lastUpdatedEntry;
+    	}
     	for(var i=1; i<timeEntries.size(); i++) {
     		var lastUpdateDate = parseISODate(lastUpdatedEntry["updated_at"]);
     		var checkingEntry = timeEntries[i];
+    		if(checkingEntry["is_running"]) {
+	    		return checkingEntry;
+	    	}
     		var checkingDate = parseISODate(checkingEntry["updated_at"]);
     		
     		if(checkingDate.greaterThan(lastUpdateDate)) {
@@ -210,7 +186,7 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     
     function getTitleToTimeEntriesDict(timeEntries) {
     	var entriesDict = {};
-    	for(var i=1; i<timeEntries.size(); i++) {
+    	for(var i=0; i<timeEntries.size(); i++) {
     		var projectTitle = timeEntries[i]["project"]["name"] + " - " + timeEntries[i]["task"]["name"];
     		var existingEntry = entriesDict.get(projectTitle);
     		if(existingEntry == null) {
