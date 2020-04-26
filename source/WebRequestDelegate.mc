@@ -63,13 +63,23 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 	    	else {
 	    		myMenu.addItem("Start", :start);
 	    	}
+	    	
+	    	var keys = titleToTimeEntriesDict.keys();
+	    	for(var i=0; i<keys.size(); i++) {
+	    		// don't include if currently running!?
+	    		var timeEntry = titleToTimeEntriesDict.get(keys[i]); 
+	    		if(!timeEntry["is_running"]) {
+	    			myMenu.addItem(keys[i], timeEntry["id"]);
+	    		}
+	    	}
+	    	
 	    	WatchUi.pushView(myMenu, new MyMenuDelegate(timeEntryId, method(:updateCallback)), WatchUi.SLIDE_IMMEDIATE);
     	}
     }
     
     var actionOnLoaded = null;
     function loadingMenuUpdateCallback(startOrStopToken) {
-    	System.println("loading menu callback" + startOrStopToken);
+    	System.println("loading menu callback: " + startOrStopToken);
     	actionOnLoaded = startOrStopToken;
     	
     	makeRequest();
@@ -106,15 +116,24 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 	var isRunning = false;
 	var loaded = false;
 	var timeEntryId = 0;
+	
+	var recentTimeEntries = [0];
+	var titleToTimeEntriesDict = {};
 
     // Receive the data from the web request
     function onReceive(responseCode, data) {
     	//latest response
-    	var lastUpdatedEntry = getLastUpdatedEntry(data["time_entries"]);
-    
+    	
+    	// todo: dedupe and check today?
+    	
         if (responseCode == 200 && data["time_entries"] != null && data["time_entries"].size() > 0) {
         	loaded = true;
-        	// get first result's project and task
+        	recentTimeEntries = data["time_entries"];
+	    	var lastUpdatedEntry1 = getLastUpdatedEntry(recentTimeEntries);
+	    	System.println("last " + lastUpdatedEntry1["task"]["name"]);
+	    	var lastUpdatedEntry =lastUpdatedEntry1; 
+	    	titleToTimeEntriesDict = getTitleToTimeEntriesDict(recentTimeEntries);
+	    
         	//var timeEntry1 = data["time_entries"][0];
         	var projectName = lastUpdatedEntry["project"]["name"];
         	var taskName = lastUpdatedEntry["task"]["name"];
@@ -154,20 +173,57 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
         }
     }
     
+    // todo: may need to return 'isRunning' entry instead if there is one!?
     function getLastUpdatedEntry(timeEntries) {
     	var lastUpdatedEntry = timeEntries[0];
-    	var lastUpdateDate = parseISODate(lastUpdatedEntry["updated_at"]); 
+    	
     	for(var i=1; i<timeEntries.size(); i++) {
+    		var lastUpdateDate = parseISODate(lastUpdatedEntry["updated_at"]);
     		var checkingEntry = timeEntries[i];
-    		if(parseISODate(checkingEntry["updated_at"]).greaterThan(lastUpdateDate)) {
+    		var checkingDate = parseISODate(checkingEntry["updated_at"]);
+    		
+    		if(checkingDate.greaterThan(lastUpdateDate)) {
     			lastUpdatedEntry = checkingEntry;
     		}
     	}
-    	
+
     	return lastUpdatedEntry;
     }
     
-    // todo: create parent type which has this available!
+    function getUtcStr(mo) {
+	    var today = Gregorian.info(mo, Time.FORMAT_MEDIUM);
+		var dateString = Lang.format(
+		    "$1$:$2$:$3$ $4$ $5$ $6$ $7$",
+		    [
+		        today.hour,
+		        today.min,
+		        today.sec,
+		        today.day_of_week,
+		        today.day,
+		        today.month,
+		        today.year
+		    ]
+		);
+		//System.println(dateString); // e.g. "16:28:32 Wed 1 Mar 2017"
+		return dateString;
+    }
+    
+    function getTitleToTimeEntriesDict(timeEntries) {
+    	var entriesDict = {};
+    	for(var i=1; i<timeEntries.size(); i++) {
+    		var projectTitle = timeEntries[i]["project"]["name"] + " - " + timeEntries[i]["task"]["name"];
+    		var existingEntry = entriesDict.get(projectTitle);
+    		if(existingEntry == null) {
+    			entriesDict.put(projectTitle, timeEntries[i]);
+    		}
+    		else if(parseISODate(existingEntry["updated_at"]).lessThan(parseISODate(timeEntries[i]["updated_at"]))) {
+    			entriesDict.put(projectTitle, timeEntries[i]);
+    		}
+    	}
+    	return entriesDict;
+    }
+    
+    // todo: create parent class which has this available!
     function doHarvestTimeEntryPatch(timeEntryId, typeStr) {
     	System.println("patching after load " + typeStr + " time entry: " + timeEntryId);
     	Communications.makeWebRequest(

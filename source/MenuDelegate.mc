@@ -12,11 +12,15 @@ class MyMenuDelegate extends WatchUi.MenuInputDelegate {
     }
     
     function onMenuItem(item) {
+    	System.println("menu item: " + item);
     	if(item == :stop) {
     		stop(); 
     	}
-    	if(item == :start) {
-    		start();
+    	else if(item == :start) {
+    		startId(timeEntryId);
+		}
+		else {
+			startId(item);
 		}
     }
     
@@ -25,11 +29,12 @@ class MyMenuDelegate extends WatchUi.MenuInputDelegate {
     	doHarvestTimeEntryPatch(timeEntryId, "stop");
     }
     
-    function start() {
-    	System.println("starting id " + timeEntryId);
-    	doHarvestTimeEntryPatch(timeEntryId, "restart");
+    function startId(specificTimeEntryId) {
+    	System.println("starting specific time entry id " + specificTimeEntryId);
+    	doHarvestTimeEntryPatch(specificTimeEntryId, "restart");
     }
     
+    // todo: refactor to base as used in two delegates!
     function doHarvestTimeEntryPatch(timeEntryId, typeStr) {
     	Communications.makeWebRequest(
             "https://httpproxy.now.sh/api",
