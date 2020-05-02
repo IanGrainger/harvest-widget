@@ -108,7 +108,6 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
         	//var timeEntry1 = data["time_entries"][0];
         	var projectName = lastUpdatedEntry["project"]["name"];
         	var taskName = lastUpdatedEntry["task"]["name"];
-        	var hours = lastUpdatedEntry["hours"];
         	isRunning = lastUpdatedEntry["is_running"];
         	timeEntryId = lastUpdatedEntry["id"];
         	var running = "Stopped";
@@ -116,14 +115,9 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
         		running = "Running";
         	}
         	
-        	var h = hours.toNumber();
-        	var bitHour = hours - h;
-        	var m = (60 * (hours - h)).toNumber();
-        	var minsMaybe = bitHour * 100;
+        	var timeStr = getTimeStrFromHourFraction(lastUpdatedEntry["hours"]);
 			
-			var timeStr = Lang.format("$1$:$2$", [h.format("%d"), m.format("%02d")]);
-			System.println("p:" + projectName + ", t: " + taskName + ", hours: " + hours + ", bitHour: " + bitHour + ", h: " + timeStr + " minsMaybe: " + minsMaybe + " m: " + m);
-			
+			// todo: return early if actionOnLoaded?
 			if(actionOnLoaded != null) {
 				System.println("actionOnLoaded " + actionOnLoaded);
 				if(actionOnLoaded == :start) {
@@ -135,13 +129,22 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 				actionOnLoaded = null;
 			}
 			else {
-	        	var message = projectName + "\n" + taskName + "\n" + timeStr + " - " + running; //+ "\n" + "Create: " + lastUpdatedEntry["created_at"] + "\nUpdate: " + lastUpdatedEntry["updated_at"];
+				var timeToday = getTimeTodayStr(data["time_entries"]);
+	        	var message = projectName + "\n" + taskName + "\n" + timeStr + " - " + running + "\nTotal: " + timeToday;
 	        	notify.invoke(message);
 	            //notify.invoke(data);
             }
         } else {
             notify.invoke("Failed to load\nError: " + responseCode.toString());
         }
+    }
+    
+    function getTimeStrFromHourFraction(hours) {
+		var h = hours.toNumber();
+		var bitHour = hours - h;
+		var m = (60 * (hours - h)).toNumber();
+		
+		return Lang.format("$1$:$2$", [h.format("%d"), m.format("%02d")]);
     }
     
     // todo: may need to return 'isRunning' entry instead if there is one!?
@@ -198,6 +201,33 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     		}
     	}
     	return entriesDict;
+    }
+    
+    function getTimeTodayStr(timeEntries) {
+    	var fractionalHours = getFractionalHoursToday(timeEntries);
+    	return getTimeStrFromHourFraction(fractionalHours);
+    }
+    
+    function getFractionalHoursToday(timeEntries) {
+    	var totalTime = 0.0;
+    	for(var i=0; i<timeEntries.size(); i++) {
+    		var entry = timeEntries[i];
+    		if(isToday(entry)) {
+    			totalTime = totalTime + entry["hours"];
+    		}
+    	}
+    	return totalTime;
+    }
+    
+    function isToday(timeEntry) {
+    	// today in 2020-05-02 format
+    	var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
+    	var nowDateStr = Lang.format(
+		    "$1$-$2$-$3$",
+		    [ now.year, now.month.format("%02d"), now.day.format("%02d")]
+		);
+		//System.println("today: '" + nowDateStr + "' TE: '"+ timeEntry["spent_date"] + "' today? " + (nowDateStr.equals(timeEntry["spent_date"])));
+		return nowDateStr.equals(timeEntry["spent_date"]);
     }
     
     // todo: create parent class which has this available!
