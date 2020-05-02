@@ -11,16 +11,17 @@ class MyMenuDelegate extends WatchUi.MenuInputDelegate {
         onUpdated = updateCallback;
     }
     
+    //item: {"action": "stop" | "start" | "create", "timeEntry": harvest_time_entry}
     function onMenuItem(item) {
-    	System.println("menu item: " + item);
-    	if(item == :stop) {
+    	if(item["action"].equals("stop")) {
     		stop(); 
     	}
-    	else if(item == :start) {
-    		startId(timeEntryId);
+		else if(item["action"].equals("start")) {
+			startId(item["timeEntry"]["id"]);
 		}
-		else {
-			startId(item);
+		else if(item["action"].equals("create")) {
+		System.println("creating");
+			createCopyOfTimeEntryTodayViaDuration(item["timeEntry"]);
 		}
     }
     
@@ -32,6 +33,36 @@ class MyMenuDelegate extends WatchUi.MenuInputDelegate {
     function startId(specificTimeEntryId) {
     	System.println("starting specific time entry id " + specificTimeEntryId);
     	doHarvestTimeEntryPatch(specificTimeEntryId, "restart");
+    }
+    
+    function createCopyOfTimeEntryTodayViaDuration(timeEntry) {
+    	var projectId = timeEntry["project"]["id"];
+    	var taskId = timeEntry["task"]["id"]; 
+    	var nowDateStr = getNowDateStr();
+    	System.println("proj"+projectId+",task"+taskId+",spent"+nowDateStr);
+    	// don't set hours - so it'll start a timer with 0.0 hours
+    	Communications.makeWebRequest(
+            "https://api.harvestapp.com/v2/time_entries/?access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
+            {
+            	"project_id" => projectId,
+            	"task_id" => taskId,
+            	"spent_date" => nowDateStr
+            },
+            {
+            	:method => Communications.HTTP_REQUEST_METHOD_POST,
+                "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED
+            },
+            onUpdated
+        );
+    }
+    
+    // todo: copypasta: refactor!
+    function getNowDateStr() {
+    	var now = Toybox.Time.Gregorian.info(Time.now(), Time.FORMAT_SHORT);
+    	return Lang.format(
+		    "$1$-$2$-$3$",
+		    [ now.year, now.month.format("%02d"), now.day.format("%02d")]
+		);
     }
     
     // todo: refactor to base as used in two delegates!

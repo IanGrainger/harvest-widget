@@ -20,17 +20,33 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     	if(!loaded) {
     		// special menu while loading!
     		var myMenu = new WatchUi.Menu();
-    		myMenu.addItem("Queue start", :start);
-    		myMenu.addItem("Queue stop", :stop);
+    		// todo: use timeEntryActionDict {action => start/stop}
+    		myMenu.addItem("Queue start", {
+	    			"action" => "start",
+	    			"timeEntry" => {"id"=>timeEntryId}
+	    		});
+    		// todo: use timeEntryActionDict {action => start/stop}
+    		myMenu.addItem("Queue stop", {
+	    			"action" => "stop",
+	    			"timeEntry" => {"id"=>timeEntryId}
+	    		});
 	    	WatchUi.pushView(myMenu, new LoadingMenuDelegate(method(:loadingMenuUpdateCallback)), WatchUi.SLIDE_IMMEDIATE);
     	}
     	else {
 	    	var myMenu = new WatchUi.Menu();
 	    	if(isRunning) {
-	    		myMenu.addItem("Stop", :stop);
+	    		// todo: use timeEntryActionDict {action => start/stop}
+	    		myMenu.addItem("Stop", {
+	    			"action" => "stop",
+	    			"timeEntry" => { "id" => timeEntryId }
+	    		});
 	    	}
 	    	else {
-	    		myMenu.addItem("Start", :start);
+	    		// todo: use timeEntryActionDict {action => start/stop}
+	    		myMenu.addItem("Start", {
+	    			"action" => "start",
+	    			"timeEntry" => { "id" => timeEntryId }
+	    		});
 	    	}
 	    	
 	    	var keys = titleToTimeEntriesDict.keys();
@@ -38,10 +54,24 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 	    		// don't include if currently running!?
 	    		var timeEntry = titleToTimeEntriesDict.get(keys[i]);
 	    		
+	    		// update_date takes a while to get set, unfortunately :(
+	    		var entryToday = isToday(timeEntry); 
+	    		var entryName = keys[i];
+	    		var action = "start";
+	    		
+	    		if(!entryToday) {
+	    			entryName = "(+) " + entryName;
+	    			action = "create";
+	    		}
+	    		
+	    		var timeEntryActionDict = {
+	    			"action" => action,
+	    			"timeEntry" => timeEntry
+	    		};
+	    		
 	    		// exclude one which matches the timer on the main display
-	    		// todo: check running timers get an updated update_date
 	    		if(timeEntry["id"] != timeEntryId) {
-	    			myMenu.addItem(keys[i], timeEntry["id"]);
+	    			myMenu.addItem(entryName, timeEntryActionDict);
 	    		}
 	    	}
 	    	
@@ -101,7 +131,6 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
         	loaded = true;
         	recentTimeEntries = data["time_entries"];
 	    	var lastUpdatedEntry1 = getLastUpdatedEntry(recentTimeEntries);
-	    	System.println("last " + lastUpdatedEntry1["task"]["name"]);
 	    	var lastUpdatedEntry =lastUpdatedEntry1; 
 	    	titleToTimeEntriesDict = getTitleToTimeEntriesDict(recentTimeEntries);
 	    
@@ -221,13 +250,17 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     
     function isToday(timeEntry) {
     	// today in 2020-05-02 format
+    	var nowDateStr = getNowDateStr();
+		//System.println("today: '" + nowDateStr + "' TE: '"+ timeEntry["spent_date"] + "' today? " + (nowDateStr.equals(timeEntry["spent_date"])));
+		return nowDateStr.equals(timeEntry["spent_date"]);
+    }
+    
+    function getNowDateStr() {
     	var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
-    	var nowDateStr = Lang.format(
+    	return Lang.format(
 		    "$1$-$2$-$3$",
 		    [ now.year, now.month.format("%02d"), now.day.format("%02d")]
 		);
-		//System.println("today: '" + nowDateStr + "' TE: '"+ timeEntry["spent_date"] + "' today? " + (nowDateStr.equals(timeEntry["spent_date"])));
-		return nowDateStr.equals(timeEntry["spent_date"]);
     }
     
     // todo: create parent class which has this available!
