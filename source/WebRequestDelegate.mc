@@ -9,7 +9,7 @@ using Toybox.WatchUi;
 using Toybox.Time.Gregorian;
 
 class WebRequestDelegate extends WatchUi.BehaviorDelegate {
-	var numToRequest = 8; 
+	var numToRequest = 5; 
     var notify;
     
     function onSelect() {
@@ -63,6 +63,9 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 	    			entryName = "(+) " + entryName;
 	    			action = "create";
 	    		}
+	    		
+	    		var vm = new TimeEntryViewModel();
+	    		vm.init(timeEntry);
 	    		
 	    		var timeEntryActionDict = {
 	    			"action" => action,

@@ -11,7 +11,7 @@ class MyMenuDelegate extends WatchUi.MenuInputDelegate {
         onUpdated = updateCallback;
     }
     
-    //item: {"action": "stop" | "start" | "create", "timeEntry": harvest_time_entry}
+    //item: {"action": "stop" | "start" | "create", "timeEntry": sparse_harvest_time_entry}
     function onMenuItem(item) {
     	if(item["action"].equals("stop")) {
     		stop(); 
