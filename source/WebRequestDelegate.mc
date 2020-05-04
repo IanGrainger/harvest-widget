@@ -9,7 +9,7 @@ using Toybox.WatchUi;
 using Toybox.Time.Gregorian;
 
 class WebRequestDelegate extends WatchUi.BehaviorDelegate {
-	var numToRequest = 15; 
+	var numToRequest = 8; 
     var notify;
     
     function onSelect() {
@@ -66,7 +66,9 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 	    		
 	    		var timeEntryActionDict = {
 	    			"action" => action,
-	    			"timeEntry" => timeEntry
+	    			//"timeEntry" => timeEntry // this might be way to large?
+	    			// make sparse instead?
+	    			"timeEntry" => {"id"=>timeEntry["id"], "projectId"=>timeEntry["project"]["id"], "taskId"=>timeEntry["task"]["id"]}
 	    		};
 	    		
 	    		// exclude one which matches the timer on the main display
@@ -93,7 +95,7 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     }
 
     function makeRequest() {
-        notify.invoke("Getting data...");
+        notify.invoke("Getting time entries.");
         // this seems to break the app!?
 		// Communications.cancelAllRequests();
         Communications.makeWebRequest(
@@ -161,10 +163,9 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 				var timeToday = getTimeTodayStr(data["time_entries"]);
 	        	var message = projectName + "\n" + taskName + "\n" + timeStr + " - " + running + "\nTotal: " + timeToday;
 	        	notify.invoke(message);
-	            //notify.invoke(data);
             }
         } else {
-            notify.invoke("Failed to load\nError: " + responseCode.toString());
+            notify.invoke("Failed to load\nError: " + responseCode.toString() + "\n" + data);
         }
     }
     

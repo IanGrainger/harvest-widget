@@ -17,7 +17,7 @@ class WebRequestView extends WatchUi.View {
 
     // Load your resources here
     function onLayout(dc) {
-        mMessage = "Loading...";
+        mMessage = "Harvest Widget 0.2\nLoading...";
     }
 
     // Restore the state of the app and prepare the view to be shown

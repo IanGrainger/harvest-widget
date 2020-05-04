@@ -36,8 +36,8 @@ class MyMenuDelegate extends WatchUi.MenuInputDelegate {
     }
     
     function createCopyOfTimeEntryTodayViaDuration(timeEntry) {
-    	var projectId = timeEntry["project"]["id"];
-    	var taskId = timeEntry["task"]["id"]; 
+    	var projectId = timeEntry["projectId"];
+    	var taskId = timeEntry["taskId"]; 
     	var nowDateStr = getNowDateStr();
     	System.println("proj"+projectId+",task"+taskId+",spent"+nowDateStr);
     	// don't set hours - so it'll start a timer with 0.0 hours
