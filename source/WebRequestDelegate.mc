@@ -12,6 +12,83 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 	var numToRequest = 5; 
     var notify;
     
+	var isRunning = false;
+	var loaded = false;
+	var timeEntryId = 0;
+	
+	var recentTimeEntries = [0];
+	var titleToTimeEntriesDict = {};
+    
+    var actionOnLoaded = null;
+    
+    // Set up the callback to the view
+    function initialize(handler) {
+        WatchUi.BehaviorDelegate.initialize();
+        notify = handler;
+        
+        //makeRequest();
+    }
+
+    function makeRequest() {
+        notify.invoke("Getting time entries.");
+        // this seems to break the app!?
+		// Communications.cancelAllRequests();
+        Communications.makeWebRequest(
+            "https://api.harvestapp.com/v2/time_entries?per_page="+numToRequest+"&access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
+            {
+            },
+            {
+                "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED
+            },
+            method(:onReceive)
+        );
+    }
+
+    // Receive the data from the web request
+    function onReceive(responseCode, data) {
+    	//latest response
+    	
+    	// todo: check today?
+        if (responseCode == 200 && data["time_entries"] != null && data["time_entries"].size() > 0) {
+        	loaded = true;
+        	recentTimeEntries = data["time_entries"];
+	    	var lastUpdatedEntry1 = getLastUpdatedEntry(recentTimeEntries);
+	    	var lastUpdatedEntry =lastUpdatedEntry1; 
+	    	titleToTimeEntriesDict = getTitleToTimeEntriesDict(recentTimeEntries);
+	    
+        	//var timeEntry1 = data["time_entries"][0];
+        	var projectName = lastUpdatedEntry["project"]["name"];
+        	var taskName = lastUpdatedEntry["task"]["name"];
+        	isRunning = lastUpdatedEntry["is_running"];
+        	timeEntryId = lastUpdatedEntry["id"];
+        	var running = "Stopped";
+        	if(isRunning) {
+        		running = "Running";
+        	}
+        	
+        	var timeStr = getTimeStrFromHourFraction(lastUpdatedEntry["hours"]);
+			
+			// todo: return early if actionOnLoaded?
+			if(actionOnLoaded != null) {
+				System.println("actionOnLoaded " + actionOnLoaded);
+				if(actionOnLoaded == :start) {
+					doHarvestTimeEntryPatch(timeEntryId, "restart");
+				}
+				else if(actionOnLoaded == :stop) {
+					doHarvestTimeEntryPatch(timeEntryId, "stop");
+				}
+				actionOnLoaded = null;
+			}
+			else {
+				var timeToday = getTimeTodayStr(data["time_entries"]);
+	        	var message = projectName + "\n" + taskName + "\n" + timeStr + " - " + running + "\nTotal: " + timeToday;
+	        	notify.invoke(message);
+            }
+        } else {
+            notify.invoke("Failed to load\nError: " + responseCode.toString() + "\n" + data);
+        }
+    }
+    
     function onSelect() {
 		return onMenu();
     }
@@ -21,15 +98,9 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     		// special menu while loading!
     		var myMenu = new WatchUi.Menu();
     		// todo: use timeEntryActionDict {action => start/stop}
-    		myMenu.addItem("Queue start", {
-	    			"action" => "start",
-	    			"timeEntry" => {"id"=>timeEntryId}
-	    		});
+    		myMenu.addItem("Queue start", :start);
     		// todo: use timeEntryActionDict {action => start/stop}
-    		myMenu.addItem("Queue stop", {
-	    			"action" => "stop",
-	    			"timeEntry" => {"id"=>timeEntryId}
-	    		});
+    		myMenu.addItem("Queue stop", :stop);
 	    	WatchUi.pushView(myMenu, new LoadingMenuDelegate(method(:loadingMenuUpdateCallback)), WatchUi.SLIDE_IMMEDIATE);
     	}
     	else {
@@ -84,7 +155,6 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     	}
     }
     
-    var actionOnLoaded = null;
     function loadingMenuUpdateCallback(startOrStopToken) {
     	System.println("loading menu callback: " + startOrStopToken);
     	actionOnLoaded = startOrStopToken;
@@ -97,81 +167,6 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     	makeRequest();
     }
 
-    function makeRequest() {
-        notify.invoke("Getting time entries.");
-        // this seems to break the app!?
-		// Communications.cancelAllRequests();
-        Communications.makeWebRequest(
-            "https://api.harvestapp.com/v2/time_entries?per_page="+numToRequest+"&access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
-            {
-            },
-            {
-                "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED
-            },
-            method(:onReceive)
-        );
-    }
-
-    // Set up the callback to the view
-    function initialize(handler) {
-        WatchUi.BehaviorDelegate.initialize();
-        notify = handler;
-        
-        makeRequest();
-    }
-
-	var isRunning = false;
-	var loaded = false;
-	var timeEntryId = 0;
-	
-	var recentTimeEntries = [0];
-	var titleToTimeEntriesDict = {};
-
-    // Receive the data from the web request
-    function onReceive(responseCode, data) {
-    	//latest response
-    	
-    	// todo: check today?
-        if (responseCode == 200 && data["time_entries"] != null && data["time_entries"].size() > 0) {
-        	loaded = true;
-        	recentTimeEntries = data["time_entries"];
-	    	var lastUpdatedEntry1 = getLastUpdatedEntry(recentTimeEntries);
-	    	var lastUpdatedEntry =lastUpdatedEntry1; 
-	    	titleToTimeEntriesDict = getTitleToTimeEntriesDict(recentTimeEntries);
-	    
-        	//var timeEntry1 = data["time_entries"][0];
-        	var projectName = lastUpdatedEntry["project"]["name"];
-        	var taskName = lastUpdatedEntry["task"]["name"];
-        	isRunning = lastUpdatedEntry["is_running"];
-        	timeEntryId = lastUpdatedEntry["id"];
-        	var running = "Stopped";
-        	if(isRunning) {
-        		running = "Running";
-        	}
-        	
-        	var timeStr = getTimeStrFromHourFraction(lastUpdatedEntry["hours"]);
-			
-			// todo: return early if actionOnLoaded?
-			if(actionOnLoaded != null) {
-				System.println("actionOnLoaded " + actionOnLoaded);
-				if(actionOnLoaded == :start) {
-					doHarvestTimeEntryPatch(timeEntryId, "restart");
-				}
-				else if(actionOnLoaded == :stop) {
-					doHarvestTimeEntryPatch(timeEntryId, "stop");
-				}
-				actionOnLoaded = null;
-			}
-			else {
-				var timeToday = getTimeTodayStr(data["time_entries"]);
-	        	var message = projectName + "\n" + taskName + "\n" + timeStr + " - " + running + "\nTotal: " + timeToday;
-	        	notify.invoke(message);
-            }
-        } else {
-            notify.invoke("Failed to load\nError: " + responseCode.toString() + "\n" + data);
-        }
-    }
-    
     function getTimeStrFromHourFraction(hours) {
 		var h = hours.toNumber();
 		var bitHour = hours - h;
