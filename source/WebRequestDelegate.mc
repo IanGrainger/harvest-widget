@@ -9,7 +9,8 @@ using Toybox.WatchUi;
 using Toybox.Time.Gregorian;
 
 class WebRequestDelegate extends WatchUi.BehaviorDelegate {
-	var numToRequest = 5; 
+	var isProxiedRequest = true;
+	var numToRequest = 5;
     var notify;
     
 	var isRunning = false;
@@ -26,13 +27,23 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
         WatchUi.BehaviorDelegate.initialize();
         notify = handler;
         
-        //makeRequest();
+        makeRequest();
     }
 
     function makeRequest() {
         notify.invoke("Getting time entries.");
         // this seems to break the app!?
 		// Communications.cancelAllRequests();
+
+		if(isProxiedRequest) {
+			getTimeEntriesProxiedAndMap();
+		}
+		else {
+			getTimeEntriesDirectlyAndMap();
+		}
+    }
+    
+    function getTimeEntriesDirectlyAndMap() {
         Communications.makeWebRequest(
             "https://api.harvestapp.com/v2/time_entries?per_page="+numToRequest+"&access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
             {
@@ -40,14 +51,11 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
             {
                 "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED
             },
-            method(:onReceive)
+            method(:mapfromDirectCall)
         );
     }
-
-    // Receive the data from the web request
-    function onReceive(responseCode, data) {
-    	//latest response
-    	
+    
+    function mapfromDirectCall(responseCode, data) {
     	// todo: check today?
         if (responseCode == 200 && data["time_entries"] != null && data["time_entries"].size() > 0) {
         	loaded = true;
@@ -89,6 +97,78 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
         }
     }
     
+	function getTimeEntriesProxiedAndMap() {
+		Communications.makeWebRequest(
+            "https://httpproxy.now.sh/api",
+            {
+            	"url" =>"https://api.harvestapp.com/v2/time_entries/?per_page=20&access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
+            	"method"=>"GET",
+            	"responseFilterArray"=>["id","hours","is_running","spent_date","updated_at","project.id","project.name","task.id","task.name"],
+            	"responseFilterRoot"=>"time_entries"
+            },
+            {
+            	:method => Communications.HTTP_REQUEST_METHOD_POST,
+                "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED
+            },
+            method(:mapFromProxiedCall)
+        );
+    }
+    
+    function mapFromProxiedCall(responseCode, data) {
+    	// todo: check today?
+        if (responseCode == 200 && data != null && data.size() > 0) {
+        	loaded = true;
+        	
+        	var timeEntries = [];
+        	for(var i=0; i<data.size(); i++) {
+        		var vm = new TimeEntryViewModel();
+        		vm.initFromProxy(data[i]);
+        		timeEntries.add(vm);
+        	}
+			entriesLoaded(timeEntries);
+        } else {
+            notify.invoke("Failed to load\nError: " + responseCode.toString() + "\n" + data);
+        }
+    }
+    
+    function entriesLoaded(timeEntries) {
+    	var lastUpdatedEntry = getLastUpdatedEntryVM(timeEntries);
+    	titleToTimeEntriesDict = getTitleToTimeEntriesDictVM(timeEntries);
+    	isRunning = lastUpdatedEntry.IsRunning;
+    	timeEntryId = lastUpdatedEntry.Id;
+    	var running = getIsRunningStr();
+    	var timeStr = getTimeStrFromHourFraction(lastUpdatedEntry.Hours);
+    	
+		if(actionOnLoaded != null) {
+			doActionOnLoaded();
+		}
+		else {
+			var timeToday = getTimeTodayStrVM(timeEntries);
+        	var message = lastUpdatedEntry.ProjectName + "\n" + lastUpdatedEntry.TaskName + "\n" + timeStr + " - " + running + "\nTotal: " + timeToday;
+        	notify.invoke(message);
+		}
+    }
+    
+    function getIsRunningStr() {
+    	if(isRunning) {
+    		return "Running";
+    	}
+    	else {
+    		return "Stopped";
+    	}
+    }
+    
+    function doActionOnLoaded() {
+		System.println("actionOnLoaded " + actionOnLoaded);
+		if(actionOnLoaded == :start) {
+			doHarvestTimeEntryPatch(timeEntryId, "restart");
+		}
+		else if(actionOnLoaded == :stop) {
+			doHarvestTimeEntryPatch(timeEntryId, "stop");
+		}
+		actionOnLoaded = null;
+    }
+
     function onSelect() {
 		return onMenu();
     }
@@ -126,7 +206,14 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 	    		var timeEntry = titleToTimeEntriesDict.get(keys[i]);
 	    		
 	    		// update_date takes a while to get set, unfortunately :(
-	    		var entryToday = isToday(timeEntry); 
+	    		
+	    		var entryToday =false; 
+				if(isProxiedRequest) {
+	    			entryToday = isTodayVM(timeEntry);
+	    		}
+	    		else {
+	    			entryToday = isToday(timeEntry);
+	    		} 
 	    		var entryName = keys[i];
 	    		var action = "start";
 	    		
@@ -134,21 +221,31 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 	    			entryName = "(+) " + entryName;
 	    			action = "create";
 	    		}
-	    		
-	    		var vm = new TimeEntryViewModel();
-	    		vm.init(timeEntry);
-	    		
-	    		var timeEntryActionDict = {
-	    			"action" => action,
-	    			//"timeEntry" => timeEntry // this might be way to large?
-	    			// make sparse instead?
-	    			"timeEntry" => {"id"=>timeEntry["id"], "projectId"=>timeEntry["project"]["id"], "taskId"=>timeEntry["task"]["id"]}
-	    		};
-	    		
-	    		// exclude one which matches the timer on the main display
-	    		if(timeEntry["id"] != timeEntryId) {
-	    			myMenu.addItem(entryName, timeEntryActionDict);
-	    		}
+	    			    		
+	    		if(isProxiedRequest) {
+	    			var timeEntryActionDict = {
+		    			"action" => action,
+		    			// todo: replace with awesome new VM!
+		    			"timeEntry" => {"id"=>timeEntry.Id, "projectId"=>timeEntry.ProjectId, "taskId"=>timeEntry.TaskId}
+		    		};
+		    		
+		    		// exclude one which matches the timer on the main display
+		    		if(timeEntry.Id != timeEntryId) {
+		    			myMenu.addItem(entryName, timeEntryActionDict);
+		    		}
+		    	}
+		    	else {
+		    		var timeEntryActionDict = {
+		    			"action" => action,
+		    			// todo: replace with awesome new VM!
+		    			"timeEntry" => {"id"=>timeEntry["id"], "projectId"=>timeEntry["project"]["id"], "taskId"=>timeEntry["task"]["id"]}
+		    		};
+		    		
+		    		// exclude one which matches the timer on the main display
+		    		if(timeEntry["id"] != timeEntryId) {
+		    			myMenu.addItem(entryName, timeEntryActionDict);
+		    		}
+		    	}
 	    	}
 	    	
 	    	WatchUi.pushView(myMenu, new MyMenuDelegate(timeEntryId, method(:updateCallback)), WatchUi.SLIDE_IMMEDIATE);
@@ -175,6 +272,7 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 		return Lang.format("$1$:$2$", [h.format("%d"), m.format("%02d")]);
     }
     
+    // todo: remove
     // todo: may need to return 'isRunning' entry instead if there is one!?
     function getLastUpdatedEntry(timeEntries) {
     	var lastUpdatedEntry = timeEntries[0];
@@ -189,6 +287,29 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 	    		return checkingEntry;
 	    	}
     		var checkingDate = parseISODate(checkingEntry["updated_at"]);
+    		
+    		if(checkingDate.greaterThan(lastUpdateDate)) {
+    			lastUpdatedEntry = checkingEntry;
+    		}
+    	}
+
+    	return lastUpdatedEntry;
+    }
+    
+    // todo: may need to return 'isRunning' entry instead if there is one!?
+    function getLastUpdatedEntryVM(timeEntries) {
+    	var lastUpdatedEntry = timeEntries[0];
+    	
+    	if(lastUpdatedEntry.IsRunning) {
+    		return lastUpdatedEntry;
+    	}
+    	for(var i=1; i<timeEntries.size(); i++) {
+    		var lastUpdateDate = parseISODate(lastUpdatedEntry.UpdatedDtStr);
+    		var checkingEntry = timeEntries[i];
+    		if(checkingEntry.IsRunning) {
+	    		return checkingEntry;
+	    	}
+    		var checkingDate = parseISODate(checkingEntry.UpdatedDtStr);
     		
     		if(checkingDate.greaterThan(lastUpdateDate)) {
     			lastUpdatedEntry = checkingEntry;
@@ -231,6 +352,21 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     	return entriesDict;
     }
     
+    function getTitleToTimeEntriesDictVM(timeEntries) {
+    	var entriesDict = {};
+    	for(var i=0; i<timeEntries.size(); i++) {
+    		var projectTitle = timeEntries[i].Name;
+    		var existingEntry = entriesDict.get(projectTitle);
+    		if(existingEntry == null) {
+    			entriesDict.put(projectTitle, timeEntries[i]);
+    		}
+    		else if(parseISODate(existingEntry.UpdatedDtStr).lessThan(parseISODate(timeEntries[i].UpdatedDtStr))) {
+    			entriesDict.put(projectTitle, timeEntries[i]);
+    		}
+    	}
+    	return entriesDict;
+    }
+    
     function getTimeTodayStr(timeEntries) {
     	var fractionalHours = getFractionalHoursToday(timeEntries);
     	return getTimeStrFromHourFraction(fractionalHours);
@@ -252,6 +388,28 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     	var nowDateStr = getNowDateStr();
 		//System.println("today: '" + nowDateStr + "' TE: '"+ timeEntry["spent_date"] + "' today? " + (nowDateStr.equals(timeEntry["spent_date"])));
 		return nowDateStr.equals(timeEntry["spent_date"]);
+    }
+    
+    function getTimeTodayStrVM(timeEntries) {
+    	var fractionalHours = getFractionalHoursTodayVM(timeEntries);
+    	return getTimeStrFromHourFraction(fractionalHours);
+    }
+    
+    function getFractionalHoursTodayVM(timeEntries) {
+    	var totalTime = 0.0;
+    	for(var i=0; i<timeEntries.size(); i++) {
+    		var entry = timeEntries[i];
+    		if(isTodayVM(entry)) {
+    			totalTime = totalTime + entry.Hours;
+    		}
+    	}
+    	return totalTime;
+    }
+    
+    function isTodayVM(timeEntry) {
+    	// today in 2020-05-02 format
+    	var nowDateStr = getNowDateStr();
+		return nowDateStr.equals(timeEntry.SpentDate);
     }
     
     function getNowDateStr() {
