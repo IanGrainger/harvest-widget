@@ -10,7 +10,8 @@ using Toybox.Time.Gregorian;
 
 class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 	var isProxiedRequest = true;
-	var numToRequest = 5;
+	var numToRequestDirect = 5;
+	var numToRequestProxied = 20;
     var notify;
     
 	var isRunning = false;
@@ -45,7 +46,7 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     
     function getTimeEntriesDirectlyAndMap() {
         Communications.makeWebRequest(
-            "https://api.harvestapp.com/v2/time_entries?per_page="+numToRequest+"&access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
+            "https://api.harvestapp.com/v2/time_entries?per_page="+numToRequestDirect+"&access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
             {
             },
             {
@@ -101,7 +102,7 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
 		Communications.makeWebRequest(
             "https://httpproxy.now.sh/api",
             {
-            	"url" =>"https://api.harvestapp.com/v2/time_entries/?per_page=20&access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
+            	"url" =>"https://api.harvestapp.com/v2/time_entries/?per_page="+numToRequestProxied+"&access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
             	"method"=>"GET",
             	"responseFilterArray"=>["id","hours","is_running","spent_date","updated_at","project.id","project.name","task.id","task.name"],
             	"responseFilterRoot"=>"time_entries"
