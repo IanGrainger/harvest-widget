@@ -104,7 +104,7 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
             {
             	"url" =>"https://api.harvestapp.com/v2/time_entries/?per_page="+numToRequestProxied+"&access_token=5034.pt.Zs6dN9lcB0QYSS0OQgtbuiDGJmU3LBp7mJRS1UvKo2Hxm_LD9gGGs8N-r0lPfhw3AeJMpQvpTSd7wgtdmIOcyQ&account_id=97677",
             	"method"=>"GET",
-            	"responseFilterArray"=>["id","hours","is_running","spent_date","updated_at","project.id","project.name","task.id","task.name"],
+            	"responseFilterArray"=>"[id, hours, is_running, spent_date, updated_at, project.id, project.name, task.id, task.name]",
             	"responseFilterRoot"=>"time_entries"
             },
             {
@@ -119,7 +119,6 @@ class WebRequestDelegate extends WatchUi.BehaviorDelegate {
     	// todo: check today?
         if (responseCode == 200 && data != null && data.size() > 0) {
         	loaded = true;
-        	
         	var timeEntries = [];
         	for(var i=0; i<data.size(); i++) {
         		var vm = new TimeEntryViewModel();
